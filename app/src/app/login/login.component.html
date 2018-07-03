@@ -1,0 +1,93 @@
+<div class="jumbotron vertical-center" [ngSwitch]="formstate">
+
+  <div class="container" align="center" *ngSwitchCase="'invalid'">
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+        <h1>
+          License Manager Login
+        </h1>
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+          <div class="alert alert-danger" role="alert">
+              Invalid username / password
+            </div>
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+          &nbsp;<br/>
+          <button type="button" class="btn btn-primary pull-right" (click)="formstate='form'">Retry</button>
+      </div>
+      <div class="col"></div>
+    </div>
+  </div>
+
+  <div class="container" align="center" *ngSwitchCase="'loggedin'">
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+        <h1>
+          Welcome
+        </h1>
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+        <div class="alert alert-info" role="alert">
+          Use top menus to navigate.
+        </div>
+      </div>
+      <div class="col"></div>
+    </div>
+  </div>
+
+  <div class="container" align="center" *ngSwitchCase="'form'">
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+        <h1>
+          License Manager Login
+        </h1>
+      </div>
+      <div class="col"></div>
+    </div>
+
+
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+          <input type="text" id="userName" class="form-control input-sm chat-input" placeholder="username" [(ngModel)]="username" />
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <div class="row">
+      <div class="col"></div>
+      <div class="col-4">
+          <input type="password" id="userPassword" class="form-control input-sm chat-input" placeholder="password" [(ngModel)]="password" />
+      </div>
+      <div class="col"></div>
+    </div>
+
+    <div class="row">
+        <div class="col"></div>
+        <div class="col-4">
+            &nbsp;<br/>
+            <button type="button" class="btn btn-primary pull-right" (click)="doLogin()" [disabled]="checkDisableLogin()">Login</button>
+        </div>
+        <div class="col"></div>
+      </div>
+  </div>
+</div>

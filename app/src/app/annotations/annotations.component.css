@@ -1,0 +1,26 @@
+.floating-div {
+  position: fixed;
+  z-index: 10000;
+}
+
+.floating-div-right {
+
+  top: 0px;
+  position: fixed;
+}
+
+.floating-div-right {
+
+  top: 0px;
+  right: -10px;
+  position: fixed;
+}
+
+.control {
+  margin-bottom: 5px;
+}
+
+.image-div {
+  margin-left: 200px;
+  margin-top: 200px;
+}

@@ -1,0 +1,8 @@
+auth:
+  path: ./default.creds
+  key: IVV7RrKK7fNi1vMHTuJ8aBDFRa2WrqlOqZzvX5w4Nso=
+anno:
+  dbs: D:\dump\annosample\db.sample.db
+  rawimgs: D:\dump\annosample\imgs
+  refimgs: D:\dump\annosample\imgs
+  createIfAbsent: True
