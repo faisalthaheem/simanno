@@ -615,7 +615,7 @@ def loadsqlitedbs():
         logger.info("Opening database " + db)
 
         if os.path.exists(db):
-            conn = sqlite3.connect(db)
+            conn = sqlite3.connect(db,1000,check_same_thread=False)
             dbconns[db] = conn
 
             cursor = conn.cursor()
