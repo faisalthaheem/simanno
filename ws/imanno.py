@@ -50,6 +50,10 @@ dbcursors = {}
 refFiles =[]
 currIndex = 0
 
+#when createIfAbsent is true, this variable is set in updateannotation to make it
+#convenient for the possibly following images to have the same annotated area in lookupimage
+lastAnnotationCoords = None
+
 def loadConfig(configfilename='./imanno.yaml'):
 
     global config
@@ -186,6 +190,7 @@ def changePassword():
 @app.route('/update-annotation', methods = ['POST','GET'])
 def updateAnnotation():
 
+    global lastAnnotationCoords
     response = {
         'response': 'unauthorized'
     }
@@ -195,6 +200,7 @@ def updateAnnotation():
             db = request.form['db']
             fyl = request.form['imgname']
             coords = json.loads(request.form['imgcoords'])
+            lastAnnotationCoords = coords
 
             print(fyl,coords)
 
@@ -499,12 +505,20 @@ def lookupFile(filename, checkReviewed = True):
     
     #case when create if absent is true and no info is present in any dbs
     if y1 is None and config['anno']['createIfAbsent'] == True:
-        y1 = 100
-        x1 = 100
-        y2 = 200
-        x2 = 200
-        width = 100
-        height = 100
+        if lastAnnotationCoords is not None:
+            y1 = lastAnnotationCoords['y']
+            x1 = lastAnnotationCoords['x']
+            y2 = lastAnnotationCoords['y'] + lastAnnotationCoords['height']
+            x2 = lastAnnotationCoords['x'] + lastAnnotationCoords['width']
+            width = lastAnnotationCoords['width']
+            height = lastAnnotationCoords['height']
+        else:
+            y1 = 100
+            x1 = 100
+            y2 = 200
+            x2 = 200
+            width = 100
+            height = 100
         imwidth, imheight = getImgSize(filename)
         dbName = sqlitedbs[0]
 
