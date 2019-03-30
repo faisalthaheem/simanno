@@ -50,6 +50,13 @@ dbcursors = {}
 refFiles =[]
 currIndex = 0
 
+#dictionary of key value pairs for lables
+labelslist = {}
+defaultlabel = 1
+
+#for db access
+lock = threading.Lock()
+
 #when createIfAbsent is true, this variable is set in updateannotation to make it
 #convenient for the possibly following images to have the same annotated area in lookupimage
 lastAnnotationCoords = None
@@ -57,10 +64,16 @@ lastAnnotationCoords = None
 def loadConfig(configfilename='./imanno.yaml'):
 
     global config
+    global labelslist
+    global defaultlabel
 
     try:
         with open(configfilename) as stream:
             config = yaml.load(stream)
+
+            #extract labels into their own dictionary
+            labelslist = config['labels']['list']
+            defaultlabel = config['labels']['default']
     except:
         logger.error(traceback.format_exc())
 
@@ -240,6 +253,35 @@ def getCroppedImage(fyl):
     
     return None
 
+@app.route('/set-label-to', methods = ['POST','GET'])
+def setLabelTo():
+
+    response = {
+        'response': 'unauthorized'
+    }
+    try:
+
+        #if authenticateFromHeaders():
+            db = request.form['db']
+            fyl = request.form['imgname']
+            selectedid = int(request.form['labelid'])
+
+            if selectedid not in labelslist.keys():
+                response['response'] = 'error'
+                response['message'] = 'Selected label ['+ selectedid +'] not in yaml'
+            else:
+
+                rowsAffected = updateLabel(db, fyl, selectedid, labelslist[selectedid])
+                if rowsAffected > 0:
+                    response['response'] = 'ok'
+                    response['message'] = "[{}]'s label set to [{}@{}]".format(fyl, selectedid, labelslist[selectedid])
+                else:
+                    response['response'] = 'error'
+                    response['message'] = '0 rows affected'
+    except:
+        logger.error(traceback.format_exc())
+
+    return jsonify(response)
 
 @app.route('/get-roi-for-wall')
 def getRoiForWall():
@@ -480,9 +522,13 @@ def getB64Image(fyl):
 
 def lookupFile(filename, checkReviewed = True):
 
+    
+
     y1,x1,y2,x2,width,height,imheight,imwidth,dbName = None,None,None,None,None,None,None,None,None
 
+    lock.acquire()
     for db in sqlitedbs:
+        
         try:
             cursor = dbcursors[db]
             if cursor is not None:
@@ -502,6 +548,8 @@ def lookupFile(filename, checkReviewed = True):
 
         except:
             logger.error(traceback.format_exc())
+
+    lock.release()
     
     #case when create if absent is true and no info is present in any dbs
     if y1 is None and config['anno']['createIfAbsent'] == True:
@@ -549,7 +597,7 @@ def insertFile(fyl, coords):
             imwidth, imheight = getImgSize(fyl)
 
             #insert new information
-            query = "INSERT INTO plates values('{}','boot',{},{},{},{},{},{},'',{},{},1,0,0,0)".format(
+            query = "INSERT INTO plates values('{}','boot',{},{},{},{},{},{},'',{},{},1,0,0,0,{},'{}',0)".format(
                 fyl,
                 coords['y'], 
                 coords['x'], 
@@ -557,8 +605,10 @@ def insertFile(fyl, coords):
                 coords['x'] + coords['width'], 
                 coords['width'], 
                 coords['height'], 
-                imheight, 
-                imwidth
+                imheight,
+                imwidth,
+                defaultlabel,
+                labelslist[defaultlabel]
             )
             cursor.execute(query)
             return cursor.rowcount
@@ -572,6 +622,27 @@ def insertFile(fyl, coords):
     return rowsAffected
 
 
+def updateLabel(db, fyl, labelid, labeltext):
+
+    rowsAffected = 0
+    try:
+        cursor = dbcursors[db]
+        if cursor is not None:
+            #look up plate information for the requested name
+            query = "UPDATE plates set labelid={}, labeltext='{}' where filename = '{}'".format(
+                labelid, labeltext, fyl
+            )
+            logger.debug(query)
+            cursor.execute(query)
+            rowsAffected = cursor.rowcount
+
+            if rowsAffected > 0:
+                dbconns[db].commit()
+    except:
+        logger.error(traceback.format_exc())
+
+    return rowsAffected
+    
 def updateFile(db, fyl, coords):
 
     rowsAffected = 0

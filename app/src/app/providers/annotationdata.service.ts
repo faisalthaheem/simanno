@@ -68,4 +68,20 @@ export class AnnotationdataService {
 
     return this.http.post(endpoint, formData, {headers});
   }
+
+  updateLabel(dbName: string, imgname: string, labelid: string) {
+
+    const endpoint = this.baseurl + '/set-label-to';
+
+    const headers = new HttpHeaders()
+      .append('username', this.config.getConfig('username'))
+      .append('password', this.config.getConfig('password'));
+
+      const formData: FormData = new FormData();
+      formData.append('db', dbName);
+      formData.append('imgname', imgname);
+      formData.append('labelid', labelid);
+
+    return this.http.post(endpoint, formData, {headers});
+  }
 }
