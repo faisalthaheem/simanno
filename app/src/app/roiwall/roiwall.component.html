@@ -1,11 +1,19 @@
-<ngx-datatable
-  class="material"
-  [rows] = "rows"
-  [columns]="[{name:'col0'},{name:'col1'},{name:'col2'},{name:'col3'}]"
-  [columnMode]="'force'"
-  [headerHeight]="50"
-  [footerHeight]="50"
-  [rowHeight]="'auto'"
-  [limit]="100">
+<mat-toolbar>
+  <mat-toolbar-row>
+    <button mat-raised-button color="accent" mat-button (click)="onDeleteSelected()">Delete Selected</button>
+    <span class="example-spacer"></span>
+    <mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+      (page)="pageEvent = onPageChange($event)">
+    </mat-paginator>
+  </mat-toolbar-row>
+</mat-toolbar>
 
- </ngx-datatable>
+<br />
+
+<div>
+  <ng-container *ngFor="let data of pageData">
+    <app-roi-element *ngFor="let roi of data.areas" imgname="{{data.filename}}" [roidata]="roi">
+    </app-roi-element>
+  </ng-container>
+
+</div>

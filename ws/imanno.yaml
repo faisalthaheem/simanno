@@ -3,11 +3,11 @@ auth:
   key: IVV7RrKK7fNi1vMHTuJ8aBDFRa2WrqlOqZzvX5w4Nso=
 labels:
   list:
-    1: pose-side
+    1: dog
     2: cat
-  default: 2
+  default: 1
 anno:
-  dbs: D:\dump\annosample\db.sample.db
-  rawimgs: D:\dump\annosample\imgs
-  refimgs: D:\dump\annosample\imgs
+  dbs: ../db/db.sample.db
+  rawimgs: ../sample-images
+  refimgs: ../sample-images
   createIfAbsent: True

@@ -1,26 +1,32 @@
-.floating-div {
-  position: fixed;
+.work-area-gid {
+  display: grid;
+  grid-template-columns: 20px auto 20px;
+  grid-template-rows: 50px 50px auto;
+}
+
+
+.work-area-gid .tools .row2 {
+  grid-column: 1;
+  column-span: all;
+  grid-row: 1;
+}
+
+.toolbar {
+  position: sticky;
+  top: 0;
   z-index: 10000;
-}
-
-.floating-div-right {
-
-  top: 0px;
-  position: fixed;
-}
-
-.floating-div-right {
-
-  top: 0px;
-  right: -10px;
-  position: fixed;
 }
 
 .control {
   margin-bottom: 5px;
+
+  display: inline;
 }
 
-.image-div {
-  margin-left: 200px;
-  margin-top: 200px;
+.control .delete-button {
+  float: right;
+}
+
+.number-input {
+  width: 50px;
 }

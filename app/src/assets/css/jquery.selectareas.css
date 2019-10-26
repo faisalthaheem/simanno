@@ -30,8 +30,20 @@
 	height: 16px;
 	width: 16px;
 }
+
 .delete-area {
 	position: absolute;
 	cursor: pointer;
 	padding: 5px;
+}
+
+.info-area {
+	position: absolute;
+	cursor: pointer;
+  padding: 5px;
+  color: black;
+  background-color: lightgray;
+  font-weight: 700;
+  padding: 0px 2px 0px 2px;
+  opacity: 0.4;
 }

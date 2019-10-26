@@ -33,6 +33,16 @@ export class AnnotationdataService {
     return this.http.get(this.baseurl + '/get-prev-image', {headers});
   }
 
+  deleteImage(imgName: string) {
+
+    const headers = new HttpHeaders()
+      .append('username', this.config.getConfig('username'))
+      .append('password', this.config.getConfig('password'))
+      .append('imgname', imgName);
+
+    return this.http.get(this.baseurl + '/delete-image', {headers});
+  }
+
   deleteCurrImage() {
 
     const headers = new HttpHeaders()
@@ -43,13 +53,13 @@ export class AnnotationdataService {
   }
 
 
-  getRoiWallData() {
+  getRoiWallData(pageInfo: any) {
 
     const headers = new HttpHeaders()
       .append('username', this.config.getConfig('username'))
       .append('password', this.config.getConfig('password'))
+      .append('pageInfo', JSON.stringify(pageInfo) )
       .append('scriptip', this.baseurl);
-
     return this.http.get(this.baseurl + '/get-roi-wall-data', {headers});
   }
 
@@ -83,5 +93,18 @@ export class AnnotationdataService {
       formData.append('labelid', labelid);
 
     return this.http.post(endpoint, formData, {headers});
+  }
+
+  getLabels() {
+
+    const endpoint = this.baseurl + '/get-labels';
+
+    const headers = new HttpHeaders()
+      .append('username', this.config.getConfig('username'))
+      .append('password', this.config.getConfig('password'));
+
+      const formData: FormData = new FormData();
+      console.log("requesting " + endpoint)
+    return this.http.get(endpoint, {headers});
   }
 }

@@ -1,0 +1,13 @@
+<mat-card class="roi-tile">
+  <mat-card-header>
+    <mat-card-title>{{imgname}}</mat-card-title>
+    <mat-card-subtitle *ngIf="!isDeleted">[{{roidata.id}}] [y,x,h,w] [{{roidata.y}},{{roidata.x}},{{roidata.height}},{{roidata.width}}] {{roidata.lblid}} {{roidata.lbltxt}}</mat-card-subtitle>
+    <mat-card-subtitle *ngIf="isDeleted">Deleted</mat-card-subtitle>
+  </mat-card-header>
+  <img class="tile-image" src="{{baseurl}}/get-roi-for-wall?filename={{imgname}}&y={{roidata.y}}&x={{roidata.x}}&h={{roidata.height}}&w={{roidata.width}}" alt="Photo of a Shiba Inu">
+  <mat-card-actions>
+
+    <mat-checkbox *ngIf="!isDeleted" class="example-margin" [(ngModel)]="selected">Delete</mat-checkbox>
+
+  </mat-card-actions>
+</mat-card>

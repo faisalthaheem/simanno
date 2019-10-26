@@ -48,7 +48,7 @@ sqlitedbs = []
 dbconns = {}
 dbcursors = {}
 refFiles =[]
-currIndex = 0
+currIndex = -1
 
 #dictionary of key value pairs for lables
 labelslist = {}
@@ -212,10 +212,11 @@ def updateAnnotation():
         #if authenticateFromHeaders():
             db = request.form['db']
             fyl = request.form['imgname']
-            coords = json.loads(request.form['imgcoords'])
+            #coords = json.loads(request.form['imgcoords'])
+            coords = request.form['imgcoords']
             lastAnnotationCoords = coords
 
-            print(fyl,coords)
+            print(db,fyl,coords)
 
             rowsAffected = updateFile(db, fyl, coords)
             if rowsAffected > 0:
@@ -228,30 +229,19 @@ def updateAnnotation():
 
     return jsonify(response)
 
-def getCroppedImage(fyl):
-    
-    y1,x1,y2,x2,width,height,imheight,imwidth,dbName = lookupFile(fyl, False)
-    
-    if y1 is not None:
-        filename = os.path.join(config['anno']['rawimgs'], fyl)
-        logger.info(filename)
-        im = Image.open(filename, mode='r')
-        im = im.crop((x1,y1,x2,y2))
-
-        bdata = io.BytesIO()
-        im.save(bdata, 'JPEG')
-        bdata.seek(0)
-
-        return bdata
+def getCroppedImage(fyl, y, x, h, w):
         
+    filename = os.path.join(config['anno']['rawimgs'], fyl)
+    logger.info(filename)
+    im = Image.open(filename, mode='r')
+    im = im.crop((x,y,x+w,y+h))
 
-        # strIO = StringIO()
-        # imsave(strIO, im.tobytes('raw'))
-        # strIO.seek(0)
+    bdata = io.BytesIO()
+    im.save(bdata, 'JPEG')
+    bdata.seek(0)
 
-        #return io.BytesIO(im.tobytes())
-    
-    return None
+    return bdata
+        
 
 @app.route('/set-label-to', methods = ['POST','GET'])
 def setLabelTo():
@@ -288,8 +278,13 @@ def getRoiForWall():
     
     # https://gist.github.com/sergeyk/4536515
     try:
-        fyl = request.args.get('fyl')
-        strIO = getCroppedImage(fyl)
+        fyl = request.args.get('filename')
+        y = int(request.args.get('y'))
+        x = int(request.args.get('x'))
+        h = int(request.args.get('h'))
+        w = int(request.args.get('w'))
+
+        strIO = getCroppedImage(fyl, y, x, h, w)
 
         return send_file(strIO, mimetype='image/jpg')
 
@@ -297,40 +292,106 @@ def getRoiForWall():
         logger.error(traceback.format_exc())
 
 
+def getRoiInformation(fileNames):
+
+
+    ret = []
+    fileNames = ["'" + fileName + "'" for fileName in fileNames]
+
+    lock.acquire()
+
+    for db in sqlitedbs:
+        
+        try:
+            cursor = dbcursors[db]
+            if cursor is not None:
+                query = "SELECT filename, imgareas FROM annotations where filename in ({}) order by filename".format(','.join(fileNames))
+                print(query)
+                cursor.execute(query)
+                rows = cursor.fetchall()
+                
+                for row in rows:
+                    ret.append(
+                        {
+                            "filename" : row[0],
+                            "areas": json.loads(row[1])
+                        } 
+                    )
+        except:
+            logger.error(traceback.format_exc())
+
+    lock.release()
+
+    return ret
+    
+
 @app.route('/get-roi-wall-data')
 def getRoiWallData():
 
     response = {}
     try:
         scriptip = request.headers.get('scriptip')
-
-        imgsPerRow = 4
-        totalRows = len(refFiles) // imgsPerRow
-        filesProcessed = 0
-        rows = []
-
-        for i in range(totalRows):
-            
-            baseIndex = i * imgsPerRow
-            nuRow = {}
-            currIndex = 0
-            while currIndex < imgsPerRow and filesProcessed < len(refFiles):
-                
-                fyl = refFiles[baseIndex + currIndex]
-                nuRow['col{}'.format(currIndex)] = "<img src='{}/get-roi-for-wall?rnd={}&fyl={}' />".format(scriptip,random.random(),fyl)
-
-                currIndex += 1
-                filesProcessed += 1
-                
-            rows.append(nuRow)
+        pageInfo = json.loads(request.headers.get('pageInfo'))
         
-        response['rows'] = rows
+        sliceStart = (len(refFiles)//pageInfo['pageSize']) * pageInfo['pageIndex']
+        sliceEnd = sliceStart + pageInfo['pageSize']
+
+        sliceEnd = len(refFiles) if sliceEnd > len(refFiles) else sliceEnd
+
+        ret = getRoiInformation(refFiles[sliceStart:sliceEnd])
+
+        response = {
+            "total" : len(refFiles),
+            "data" : ret
+        }
+    except:
+        logger.error(traceback.format_exc())
+        
+
+    return jsonify(response)
+
+@app.route('/delete-image')
+def deleteImage():
+    response = {
+        'response': 'unauthorized'
+    }
+    global refFiles
+
+    try:
+        if authenticateFromHeaders():
+            fileToDelete = request.headers.get("imgname")
+            logger.info("Deleting image by name: " + fileToDelete)
+
+            fileIndex = refFiles.index(fileToDelete)
+                        
+            for db in sqlitedbs:
+                try:
+                    cursor = dbcursors[db]
+                    if cursor is not None:
+                        query = "UPDATE annotations set isdeleted = 1 WHERE filename = '{}'".format(fileToDelete)
+                        
+                        lock.acquire()
+                        cursor.execute(query)
+                        dbconns[db].commit()
+
+                        #delete from disk
+                        os.remove(os.path.join(config["anno"]["refimgs"], refFiles[fileIndex]))
+                        del refFiles[fileIndex]
+
+                        response = {
+                            "status": "ok"
+                        }
+                except:
+                    logger.error(traceback.format_exc())
+                finally:
+                    lock.release()
+
     except:
         logger.error(traceback.format_exc())
 
     return jsonify(response)
 
-
+    
 @app.route('/delete-current-image')
 def deleteCurrentImage():
     response = {
@@ -346,12 +407,15 @@ def deleteCurrentImage():
                 try:
                     cursor = dbcursors[db]
                     if cursor is not None:
-                        query = "UPDATE plates set isdeleted = 1 WHERE filename = '{}'".format(fyl)
+                        query = "UPDATE annotations set isdeleted = 1 WHERE filename = '{}'".format(fyl)
                         
+                        lock.acquire()
                         cursor.execute(query)
                         dbconns[db].commit()
                 except:
                     logger.error(traceback.format_exc())
+                finally:
+                    lock.release()
             
             #delete from disk
             os.remove(os.path.join(config["anno"]["refimgs"], refFiles[currIndex]))
@@ -389,68 +453,42 @@ def getNextImage(retainIndex = False):
                 if currIndex >= len(refFiles):
                         currIndex = 0
                 
-                finderIndex = currIndex
-                while finderIndex < len(refFiles):
-                    fyl = refFiles[finderIndex]
-                    
-                    y1,x1,y2,x2,width,height,imheight,imwidth,dbName = lookupFile(fyl, unreviewed)
-                    print(y1,x1,y2,x2,width,height,imheight,imwidth,dbName)
-                    if y1 is None:
-                        fyl = None
-                        finderIndex += 1
-                        continue
-                    else:
-                        currIndex = finderIndex
-                        break
-
+                
             elif fylFilter == "name":
                 logger.info("Looking up by name")
 
                 try:
-                    indx = refFiles.index(filterval)
-                    fyl = filterval
-                    y1,x1,y2,x2,width,height,imheight,imwidth,dbName = lookupFile(fyl, False)
-                    if y1 is None:
-                        fyl = None
-                    else:
-                        currIndex = indx
-
+                    currIndex = refFiles.index(filterval)
                 except:
                     pass
 
             elif fylFilter == "seek":
-                try:
-                    fyl = refFiles[int(filterval)]
-                    logger.info("Seeking to index [{}]=[{}]".format(filterval, fyl))
-                    y1,x1,y2,x2,width,height,imheight,imwidth,dbName = lookupFile(fyl, False)
-                    if y1 is None:
-                        fyl = None
-                    else:
-                        currIndex = int(filterval)
-                except:
-                    logger.error(traceback.format_exc())
+                seekIndex = int(filterval)
+                if seekIndex >=0 and seekIndex < len(refFiles):
+                    currIndex = seekIndex
 
+            fyl = refFiles[currIndex]
+            imheight,imwidth,imgareas,dbName = lookupFile(fyl, unreviewed)
 
-            if fyl is not None:
+            if dbName is not None:
                 
-                annotation = {
-                    'x': x1,
-                    'y': y1,
-                    'width': width,
-                    'height': height,
-                    'id': 1,
-                    'z': 100
-                }
-
-                response['imgname'] = fyl			
+                response['imgname'] = fyl	
                 response['img'] = getB64Image(fyl)
-                response['annotation'] = json.dumps(annotation)
+                response['annotation'] = imgareas
                 response['db'] = dbName
                 response['response'] = 'valid'
                 response['progress'] = "{}/{}".format(currIndex, len(refFiles))
             
+            elif config['anno']['createIfAbsent'] == True:
+                response['response'] = 'create'
+
+                response['imgname'] = fyl			
+                response['img'] = getB64Image(fyl)
+                response['annotation'] = []
+                response['db'] = sqlitedbs[0]
+                response['progress'] = "{}/{}".format(currIndex, len(refFiles))
             else:
-                response['message'] = 'No image'
+                response['message'] = "[{}] not in db and createIfAbsent is False".format(fyl)
 
     except:
         logger.error(traceback.format_exc())
@@ -470,45 +508,32 @@ def getPrevImage():
 
             currIndex -= 1
             
-            if currIndex <= 0:
+            if currIndex < 0:
                 currIndex = len(refFiles) - 1
 
-            while currIndex > 0:
+            fyl = refFiles[currIndex]
+            imheight,imwidth,imgareas,dbName = lookupFile(fyl, False)
 
-                fyl = refFiles[currIndex]
-
-                y1,x1,y2,x2,width,height,imheight,imwidth,dbName = lookupFile(fyl, False)
-                if y1 is None:
-                    fyl = None
-
-                    currIndex -= 1
-                    if currIndex <= 0:
-                        currIndex = len(refFiles) - 1
-                    
-                    continue
-
-                break
-
-            if fyl is not None:
-                
-                annotation = {
-                    'x': x1,
-                    'y': y1,
-                    'width': width,
-                    'height': height,
-                    'id': 1,
-                    'z': 100
-                }
+            if dbName is not None:
+                response['response'] = 'valid'
 
                 response['imgname'] = fyl			
                 response['img'] = getB64Image(fyl)
-                response['annotation'] = json.dumps(annotation)
+                response['annotation'] = imgareas
                 response['db'] = dbName
-                response['response'] = 'valid'
                 response['progress'] = "{}/{}".format(currIndex, len(refFiles))
             
+            #let the front end create a new image area
+            elif config['anno']['createIfAbsent'] == True:
+                response['response'] = 'create'
+
+                response['imgname'] = fyl			
+                response['img'] = getB64Image(fyl)
+                response['annotation'] = []
+                response['db'] = sqlitedbs[0]
+                response['progress'] = "{}/{}".format(currIndex, len(refFiles))
             else:
-                response['message'] = 'No image'
+                response['message'] = "[{}] not in db and createIfAbsent is False".format(fyl)
 
     except:
         logger.error(traceback.format_exc())
@@ -522,11 +547,11 @@ def getB64Image(fyl):
 
 def lookupFile(filename, checkReviewed = True):
 
-    
 
-    y1,x1,y2,x2,width,height,imheight,imwidth,dbName = None,None,None,None,None,None,None,None,None
+    imheight,imwidth,imgareas,dbName = None,None,None,None
 
     lock.acquire()
+
     for db in sqlitedbs:
         
         try:
@@ -534,15 +559,17 @@ def lookupFile(filename, checkReviewed = True):
             if cursor is not None:
                 #look up plate information for the requested name
                 if checkReviewed:
-                    query = "SELECT y1,x1,y2,x2,width,height,imheight,imwidth FROM plates WHERE isdeleted = 0 AND filename = '{}' AND isreviewed = 0".format(filename)
+                    query = "SELECT imheight,imwidth,imgareas FROM annotations WHERE isdeleted = 0 AND filename = '{}' AND isreviewed = 0".format(filename)
                 else:
-                    query = "SELECT y1,x1,y2,x2,width,height,imheight,imwidth FROM plates WHERE isdeleted = 0 AND filename = '{}'".format(filename)
-                #logger.info(query)
+                    query = "SELECT imheight,imwidth,imgareas FROM annotations WHERE isdeleted = 0 AND filename = '{}'".format(filename)
+                logger.info(query)
+
+                
                 cursor.execute(query)
                 row = cursor.fetchone()
                 #logger.info('result')
                 if row is not None:
-                    y1,x1,y2,x2,width,height,imheight,imwidth = int(row[0]),int(row[1]),int(row[2]),int(row[3]),int(row[4]),int(row[5]),int(row[6]),int(row[7])
+                    imheight,imwidth,imgareas = int(row[0]),int(row[1]),row[2]
                     dbName = db
                     break
 
@@ -550,27 +577,8 @@ def lookupFile(filename, checkReviewed = True):
             logger.error(traceback.format_exc())
 
     lock.release()
-    
-    #case when create if absent is true and no info is present in any dbs
-    if y1 is None and config['anno']['createIfAbsent'] == True:
-        if lastAnnotationCoords is not None:
-            y1 = lastAnnotationCoords['y']
-            x1 = lastAnnotationCoords['x']
-            y2 = lastAnnotationCoords['y'] + lastAnnotationCoords['height']
-            x2 = lastAnnotationCoords['x'] + lastAnnotationCoords['width']
-            width = lastAnnotationCoords['width']
-            height = lastAnnotationCoords['height']
-        else:
-            y1 = 100
-            x1 = 100
-            y2 = 200
-            x2 = 200
-            width = 100
-            height = 100
-        imwidth, imheight = getImgSize(filename)
-        dbName = sqlitedbs[0]
-
-    return y1,x1,y2,x2,width,height,imheight,imwidth,dbName
+            
+    return imheight,imwidth,imgareas,dbName
 
 def getImgSize(fyl):
     
@@ -587,7 +595,7 @@ def getImgSize(fyl):
 
     return 0,0
 
-def insertFile(fyl, coords):
+def insertFile(fyl, coords, useLock = True):
 
     rowsAffected = 0
     try:
@@ -597,21 +605,19 @@ def insertFile(fyl, coords):
             imwidth, imheight = getImgSize(fyl)
 
             #insert new information
-            query = "INSERT INTO plates values('{}','boot',{},{},{},{},{},{},'',{},{},1,0,0,0,{},'{}',0)".format(
+            query = "INSERT INTO annotations(filename, imheight, imwidth, isreviewed, imgareas) values('{}',{},{},1,'{}')".format(
                 fyl,
-                coords['y'], 
-                coords['x'], 
-                coords['y'] + coords['height'], 
-                coords['x'] + coords['width'], 
-                coords['width'], 
-                coords['height'], 
                 imheight,
                 imwidth,
-                defaultlabel,
-                labelslist[defaultlabel]
+                coords
             )
+            print(query)
+
+            if useLock is True:
+                lock.acquire()
+            
             cursor.execute(query)
-            return cursor.rowcount
+            rowsAffected = cursor.rowcount
             
         else:
             logger.warn('Could not find a db to insert new record into')
@@ -619,29 +625,19 @@ def insertFile(fyl, coords):
     except:
         logger.error(traceback.format_exc())
 
-    return rowsAffected
-
-
-def updateLabel(db, fyl, labelid, labeltext):
-
-    rowsAffected = 0
-    try:
-        cursor = dbcursors[db]
-        if cursor is not None:
-            #look up plate information for the requested name
-            query = "UPDATE plates set labelid={}, labeltext='{}' where filename = '{}'".format(
-                labelid, labeltext, fyl
-            )
-            logger.debug(query)
-            cursor.execute(query)
-            rowsAffected = cursor.rowcount
-
-            if rowsAffected > 0:
-                dbconns[db].commit()
-    except:
-        logger.error(traceback.format_exc())
+    if useLock is True:
+        lock.release()
 
     return rowsAffected
+
+@app.route('/get-labels')
+def getLabels():
+    labelsToReturn = {}
+    labelsToReturn['available'] = labelslist
+    labelsToReturn['default'] = {
+        defaultlabel : labelslist[defaultlabel]
+    }
+    return jsonify(labelsToReturn)
     
 def updateFile(db, fyl, coords):
 
@@ -649,19 +645,26 @@ def updateFile(db, fyl, coords):
     try:
         cursor = dbcursors[db]
         if cursor is not None:
+
             #look up plate information for the requested name
-            query = "UPDATE plates set x1 = {}, y1 = {}, x2 = {}, y2 = {}, width = {}, height = {}, isreviewed = 1 where filename = '{}'".format(
-                coords['x'], coords['y'], coords['x'] + coords['width'], coords['y'] + coords['height'], coords['width'], coords['height'], fyl
+            query = "UPDATE annotations set imgareas='{}', isreviewed = 1 where filename = '{}'".format(
+                coords, fyl
             )
+            print(query)
+
+            lock.acquire()
             cursor.execute(query)
+
             rowsAffected = cursor.rowcount
             if rowsAffected == 0 and config['anno']['createIfAbsent'] == True:
-                rowsAffected = insertFile(fyl, coords)
+                rowsAffected = insertFile(fyl, coords, False)
             
             if rowsAffected > 0:
                 dbconns[db].commit()
     except:
         logger.error(traceback.format_exc())
+    finally:
+        lock.release()
 
     return rowsAffected
 
@@ -677,9 +680,9 @@ def loadRefImages():
     while i < len(refFiles):
         
         fyl = refFiles[i]
-        y1,x1,y2,x2,width,height,imheight,imwidth,dbName = lookupFile(fyl, False)
+        imheight,imwidth,imgareas,dbName = lookupFile(fyl, False)
 
-        if y1 is None and config['anno']['createIfAbsent'] == False:
+        if dbName is None and config['anno']['createIfAbsent'] == False:
             logger.warn('[{}] does not have any info in db and createIfAbsent is False, will be deleting'.format(fyl))
             os.remove(os.path.join(config["anno"]["refimgs"], refFiles[i]))
             del refFiles[i]
