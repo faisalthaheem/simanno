@@ -363,8 +363,6 @@ def deleteImage():
             logger.info("Deleting image by name: " + fileToDelete)
 
             fileIndex = refFiles.index(fileToDelete)
-            print("file index is: ", fileIndex)
-            pprint(refFiles)
                         
             for db in sqlitedbs:
                 try:
@@ -390,7 +388,6 @@ def deleteImage():
 
     except:
         logger.error(traceback.format_exc())
-    pprint(refFiles)
 
     return jsonify(response)
 

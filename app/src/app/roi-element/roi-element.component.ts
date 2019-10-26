@@ -30,13 +30,10 @@ export class RoiElementComponent implements OnInit, OnDestroy {
 
     this.subscription = this.notifications.notifyRoiDeleteSelectedObservable$.subscribe((res) => {
 
-      console.log(self.selected);
-
       if(self.selected == true)
       {
         this.adata.deleteImage(self.imgname).subscribe(data => {
-          console.log(data);
-          if(data['status'] == true){
+          if(data['status'] == "ok"){
             self.isDeleted = true;
           }
         });
