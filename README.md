@@ -11,8 +11,8 @@ Refer to  [Setup Guide](https://github.com/faisalthaheem/simanno/wiki/Setup-Guid
 
 # Annotation Screen
 Following screen a sample image with different areas marked with appropriate labels
-![Annotation Screen](https://cdn.rawgit.com/faisalthaheem/simanno/60587b26/screenshots/annotating-v2.png)
+![Annotation Screen](https://rawcdn.githack.com/faisalthaheem/simanno/daec6b7be6a4dcfbd2f332199bcc97bc5b130e1c/screenshots/annotating-v2.png)
 
 # ROI (Regions Of Interest) Wall
 Following image shows the regions of interest extracted from the available data for a quick review
-![ROI Wall](https://cdn.rawgit.com/faisalthaheem/simanno/60587b26/screenshots/wall-v2.png)
+![ROI Wall](https://raw.githack.com/faisalthaheem/simanno/master/screenshots/wall-v2.png)
