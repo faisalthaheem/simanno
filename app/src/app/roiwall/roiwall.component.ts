@@ -1,6 +1,7 @@
 import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { AnnotationdataService } from '../providers/annotationdata.service';
+import {PageEvent} from '@angular/material/paginator';
 
 @Component({
   selector: 'app-roiwall',
@@ -11,26 +12,42 @@ export class RoiwallComponent implements OnInit {
 
   constructor(private adata: AnnotationdataService, private titleService: Title) { }
 
-  rows: any = [
-    {
-      'col0': '<img src="https://cdn0.iconfinder.com/data/icons/vehicle-1/48/8-128.png" />',
-      'col1': 'img 2',
-      'col2': 'img 3',
-      'col3': 'img 4',
-    }
-  ];
+  length = 100;
+  pageSize = 10;
+  pageSizeOptions: number[] = [50, 100, 500, 1000];
+  pageData = []
 
   ngOnInit() {
     this.titleService.setTitle('ROI Wall');
-    this.refreshData();
+
+    let initialEvent = {
+      'length': 3,
+      'pageIndex': 0,
+      'pageSize': 50,
+      'previousPageIndex': 1
+    }
+
+    this.getDataForWall(initialEvent);
   }
 
-  refreshData() {
-
-    this.adata.getRoiWallData()
-    .subscribe(data => {
-      this.rows = data['rows'];
-    });
+  onPageChange(pageEvent: PageEvent){
+    this.getDataForWall(pageEvent);
   }
+
+  getDataForWall(pageEvent: any){
+    console.log(pageEvent);
+
+    this.adata.getRoiWallData(pageEvent).subscribe(
+      data => {
+        console.log(data);
+        this.length = data['total'];
+        this.pageData = data['data'];
+      },
+      error => {
+        console.log(error);
+      }
+    );
+  }
+
 
 }

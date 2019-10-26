@@ -43,13 +43,13 @@ export class AnnotationdataService {
   }
 
 
-  getRoiWallData() {
+  getRoiWallData(pageInfo: any) {
 
     const headers = new HttpHeaders()
       .append('username', this.config.getConfig('username'))
       .append('password', this.config.getConfig('password'))
+      .append('pageInfo', JSON.stringify(pageInfo) )
       .append('scriptip', this.baseurl);
-
     return this.http.get(this.baseurl + '/get-roi-wall-data', {headers});
   }
 

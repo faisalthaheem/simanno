@@ -229,30 +229,19 @@ def updateAnnotation():
 
     return jsonify(response)
 
-def getCroppedImage(fyl):
-    
-    imheight,imwidth,imgareas,dbName = lookupFile(fyl, False)
-    
-    if dbName is not None:
-        filename = os.path.join(config['anno']['rawimgs'], fyl)
-        logger.info(filename)
-        im = Image.open(filename, mode='r')
-        im = im.crop((x1,y1,x2,y2))
-
-        bdata = io.BytesIO()
-        im.save(bdata, 'JPEG')
-        bdata.seek(0)
-
-        return bdata
+def getCroppedImage(fyl, y, x, h, w):
         
+    filename = os.path.join(config['anno']['rawimgs'], fyl)
+    logger.info(filename)
+    im = Image.open(filename, mode='r')
+    im = im.crop((x,y,x+w,y+h))
 
-        # strIO = StringIO()
-        # imsave(strIO, im.tobytes('raw'))
-        # strIO.seek(0)
+    bdata = io.BytesIO()
+    im.save(bdata, 'JPEG')
+    bdata.seek(0)
 
-        #return io.BytesIO(im.tobytes())
-    
-    return None
+    return bdata
+        
 
 @app.route('/set-label-to', methods = ['POST','GET'])
 def setLabelTo():
@@ -289,19 +278,25 @@ def getRoiForWall():
     
     # https://gist.github.com/sergeyk/4536515
     try:
-        fyl = request.args.get('fyl')
-        strIO = getCroppedImage(fyl)
+        fyl = request.args.get('filename')
+        y = int(request.args.get('y'))
+        x = int(request.args.get('x'))
+        h = int(request.args.get('h'))
+        w = int(request.args.get('w'))
+
+        strIO = getCroppedImage(fyl, y, x, h, w)
 
         return send_file(strIO, mimetype='image/jpg')
 
     except:
         logger.error(traceback.format_exc())
 
-#iterates through the database and counts all the img areas
-#todo loop over files and get information for each file future release
-def countTotalImgAreas():
 
-    totalAreas = 0
+def getRoiInformation(fileNames):
+
+
+    ret = []
+    fileNames = ["'" + fileName + "'" for fileName in fileNames]
 
     lock.acquire()
 
@@ -310,22 +305,24 @@ def countTotalImgAreas():
         try:
             cursor = dbcursors[db]
             if cursor is not None:
-                query = "SELECT imgareas FROM annotations"
-                
+                query = "SELECT filename, imgareas FROM annotations where filename in ({}) order by filename".format(','.join(fileNames))
+                print(query)
                 cursor.execute(query)
                 rows = cursor.fetchall()
                 
                 for row in rows:
-                    imgAreas = json.loads(row[0])
-                    totalAreas += len(imgAreas)
-
-
+                    ret.append(
+                        {
+                            "filename" : row[0],
+                            "areas": json.loads(row[1])
+                        } 
+                    )
         except:
             logger.error(traceback.format_exc())
 
     lock.release()
 
-    return totalAreas
+    return ret
     
 
 @app.route('/get-roi-wall-data')
@@ -334,30 +331,22 @@ def getRoiWallData():
     response = {}
     try:
         scriptip = request.headers.get('scriptip')
-
-        imgsPerRow = 2
-        totalRows = countTotalImgAreas() // imgsPerRow
-        filesProcessed = 0
-        rows = []
-
-        for i in range(totalRows):
-            
-            baseIndex = i * imgsPerRow
-            nuRow = {}
-            currIndex = 0
-            while currIndex < imgsPerRow and filesProcessed < len(refFiles):
-                
-                fyl = refFiles[baseIndex + currIndex]
-                nuRow['col{}'.format(currIndex)] = "<img src='{}/get-roi-for-wall?rnd={}&fyl={}' />".format(scriptip,random.random(),fyl)
-
-                currIndex += 1
-                filesProcessed += 1
-                
-            rows.append(nuRow)
+        pageInfo = json.loads(request.headers.get('pageInfo'))
         
-        response['rows'] = rows
+        sliceStart = (len(refFiles)//pageInfo['pageSize']) * pageInfo['pageIndex']
+        sliceEnd = sliceStart + pageInfo['pageSize']
+
+        sliceEnd = len(refFiles) if sliceEnd > len(refFiles) else sliceEnd
+
+        ret = getRoiInformation(refFiles[sliceStart:sliceEnd])
+
+        response = {
+            "total" : len(refFiles),
+            "data" : ret
+        }
     except:
         logger.error(traceback.format_exc())
+        
 
     return jsonify(response)
 
@@ -565,7 +554,7 @@ def getImgSize(fyl):
 
     return 0,0
 
-def insertFile(fyl, coords):
+def insertFile(fyl, coords, useLock = True):
 
     rowsAffected = 0
     try:
@@ -583,7 +572,8 @@ def insertFile(fyl, coords):
             )
             print(query)
 
-            lock.acquire()
+            if useLock is True:
+                lock.acquire()
             
             cursor.execute(query)
             rowsAffected = cursor.rowcount
@@ -593,7 +583,8 @@ def insertFile(fyl, coords):
         
     except:
         logger.error(traceback.format_exc())
-    finally:
+
+    if useLock is True:
         lock.release()
 
     return rowsAffected
@@ -622,9 +613,10 @@ def updateFile(db, fyl, coords):
 
             lock.acquire()
             cursor.execute(query)
+
             rowsAffected = cursor.rowcount
             if rowsAffected == 0 and config['anno']['createIfAbsent'] == True:
-                rowsAffected = insertFile(fyl, coords)
+                rowsAffected = insertFile(fyl, coords, False)
             
             if rowsAffected > 0:
                 dbconns[db].commit()

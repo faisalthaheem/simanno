@@ -177,6 +177,8 @@
 
                     if(area.lblid === null &&  this == options.defaultLabelId){
                       node.append($("<option>").attr('value', this).text(options.labelsDict[this]).attr("selected","selected"));
+                      area.lblid = this;
+                      area.lbltxt = options.labelsDict[this];
                     }else if(area.lblid !== null && this == area.lblid){
                       node.append($("<option>").attr('value', this).text(options.labelsDict[this]).attr("selected","selected"));
                     }else{

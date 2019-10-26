@@ -23,7 +23,10 @@ import { ConfirmDialogComponent } from './confirm-dialog/confirm-dialog.componen
 import { BrowserAnimationsModule } from '@angular/platform-browser/animations';
 
 import { AlertModule } from 'ngx-alerts';
-
+import { RoiElementComponent } from './roi-element/roi-element.component';
+import { MatCardModule } from '@angular/material';
+import {MatCheckboxModule} from '@angular/material/checkbox';
+import {MatPaginatorModule} from '@angular/material/paginator';
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -41,7 +44,8 @@ const appRoutes: Routes = [
     ChangepasswordComponent,
     AnnotationsComponent,
     RoiwallComponent,
-    ConfirmDialogComponent
+    ConfirmDialogComponent,
+    RoiElementComponent
 ],
   imports: [
     NgxDatatableModule,
@@ -57,7 +61,10 @@ const appRoutes: Routes = [
     AlertModule.forRoot({maxMessages: 5, timeout: 5000, position: 'right'}),
     BrowserAnimationsModule,
     MatButtonModule,
-    MatDialogModule
+    MatDialogModule,
+    MatCardModule,
+    MatCheckboxModule,
+    MatPaginatorModule
   ],
   providers: [
     ConfigurationService,
