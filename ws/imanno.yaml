@@ -1,0 +1,13 @@
+auth:
+  path: ./default.creds
+  key: IVV7RrKK7fNi1vMHTuJ8aBDFRa2WrqlOqZzvX5w4Nso=
+labels:
+  list:
+    1: dog
+    2: cat
+  default: 1
+anno:
+  dbs: ../db/db.sample.db
+  rawimgs: ../sample-images
+  refimgs: ../sample-images
+  createIfAbsent: True

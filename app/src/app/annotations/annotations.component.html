@@ -1,0 +1,160 @@
+<div class="toolbar">
+  <div class="control">
+      <input #namefilter
+        (keyup.enter)="loadNextImage(false,'name',namefilter.value); namefilter.value=''"
+        placeholder="Image Name"
+        type="text"
+      />
+      <input #seekFilter
+        class="number-input"
+        (keyup.enter)="loadNextImage(false,'seek',seekFilter.value); seekFilter.value=''"
+        placeholder="indx"
+        type="number"
+      />
+
+  </div>
+
+  <div class="control">
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <!-- <button type="button"  class="btn btn-warning" disabled>
+        <span class="oi oi-media-play"></span>
+      </button> -->
+      <button type="button"  class="btn btn-info" title="previous" (click)="loadPrevImage()">
+        <span class="oi oi-media-skip-backward"></span>
+      </button>
+      <button type="button"  class="btn btn-info" title="next" (click)="loadNextImage()">
+        <span class="oi oi-media-skip-forward"></span>
+      </button>
+
+      <!-- Disabling for now as feature requires implementation whether the record does not exist or requires review -->
+      <!-- <button type="button"  class="btn btn-info" title="next unprocessed" (click)="loadNextImage(true)">
+        <span class="oi oi-media-step-forward"></span>
+      </button> -->
+    </div>
+  </div>
+
+
+  <div class="control">
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <!-- <button type="button"  class="btn btn-danger" disabled>
+        <span class="oi oi-resize-both"></span>
+      </button> -->
+      <button type="button"  class="btn btn-info" title="Expand by 5 pixels" (click)="expandContract(5)">
+        <span class="oi oi-fullscreen-enter"></span>
+      </button>
+      <button type="button"  class="btn btn-info" title="Contract by 5 pixels" (click)="expandContract(-5)">
+        <span class="oi oi-fullscreen-exit"></span>
+      </button>
+
+      <button type="button"  class="btn btn-danger" disabled>
+        <span class="oi oi-resize-height"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="verticalExpandContract(+5)">
+        <span class="oi oi-plus"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="verticalExpandContract(-5)">
+        <span class="oi oi-minus"></span>
+      </button>
+
+      <button type="button"  class="btn btn-danger" disabled>
+        <span class="oi oi-resize-width"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="HorizontalExpandContract(5)">
+        <span class="oi oi-plus"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="HorizontalExpandContract(-5)">
+        <span class="oi oi-minus"></span>
+      </button>
+    </div>
+  </div>
+
+
+  <div class="control">
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button type="button"  class="btn btn-danger" disabled>
+        <span class="oi oi-project"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="expand('left',5)">
+        <span class="oi oi-expand-right"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="expand('right',5)">
+        <span class="oi oi-expand-left"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="expand('top',5)">
+        <span class="oi oi-expand-up"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="expand('bottom',5)">
+        <span class="oi oi-expand-down"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="control">
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button type="button"  class="btn btn-danger" disabled>
+        <span class="oi oi-move"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="move('left',5)">
+        <span class="oi oi-caret-left"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="move('right',5)">
+        <span class="oi oi-caret-right"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="move('top',5)">
+        <span class="oi oi-caret-top"></span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="move('bottom',5)">
+        <span class="oi oi-caret-bottom"></span>
+      </button>
+    </div>
+  </div>
+
+  <div class="control">
+    <div class="btn-group" role="group" aria-label="Basic example">
+      <button type="button"  class="btn btn-danger" disabled>
+        <span class="oi oi-link-intact"> {{aspectRatio}}</span>
+      </button>
+      <button type="button"  class="btn btn-info" (click)="toggleAspectRatioEnforcement(0.0)">
+        0.0
+      </button>
+      <button type="button"  class="btn btn-info" (click)="toggleAspectRatioEnforcement(1.0)">
+        1.0
+      </button>
+      <button type="button"  class="btn btn-info" (click)="toggleAspectRatioEnforcement(1.3)">
+        1.3
+      </button>
+    </div>
+  </div>
+
+  <div class="alert alert-primary control" role="alert">
+      <span class="badge badge-secondary">{{currentLabel.lbl}}</span>
+    <!-- <div class="control"> -->
+        <div class="btn-group" role="group" aria-label="available labels">
+          <button type="button" class="btn btn-info" *ngFor="let label of availableLabels | keyvalue" (click)="setCurrentLabelTo(label.key)">
+            {{label.value}}:{{label.key}}
+          </button>
+        </div>
+    <!-- </div> -->
+  </div>
+
+  <div class="alert alert-warning control" role="alert">
+    [{{currImgName}}] of {{currDbName}}
+  </div>
+
+  <div class="control">
+    <button type="button"  class="btn btn-danger delete-button" (click)="delCurrImg()">X</button>
+  </div>
+</div>
+
+<div class="work-area-grid">
+  <div class="tools row2">
+    <div class="image-div">
+      <img alt="image comes here" id="img-to-annotate" [src]="currImg" (load)="imageLoaded()" align="center"/>
+    </div>
+  </div>
+
+</div>
+
+
+
+
