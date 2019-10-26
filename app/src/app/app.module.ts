@@ -14,6 +14,8 @@ import { LoginComponent } from './login/login.component';
 import { AuthenticationService } from './providers/authentication.service';
 import { ConfigurationService } from './providers/configuration.service';
 import { AnnotationdataService } from './providers/annotationdata.service';
+import {NotificationsService} from './providers/notifications.service';
+
 
 import { LogoutComponent } from './logout/logout.component';
 import { ChangepasswordComponent } from './changepassword/changepassword.component';
@@ -27,6 +29,8 @@ import { RoiElementComponent } from './roi-element/roi-element.component';
 import { MatCardModule } from '@angular/material';
 import {MatCheckboxModule} from '@angular/material/checkbox';
 import {MatPaginatorModule} from '@angular/material/paginator';
+import {MatToolbarModule} from '@angular/material/toolbar';
+
 
 const appRoutes: Routes = [
   { path: '', component: LoginComponent },
@@ -64,12 +68,14 @@ const appRoutes: Routes = [
     MatDialogModule,
     MatCardModule,
     MatCheckboxModule,
-    MatPaginatorModule
+    MatPaginatorModule,
+    MatToolbarModule
   ],
   providers: [
     ConfigurationService,
     AuthenticationService,
-    AnnotationdataService
+    AnnotationdataService,
+    NotificationsService
   ],
   entryComponents: [ConfirmDialogComponent],
   bootstrap: [AppComponent]

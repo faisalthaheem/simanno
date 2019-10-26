@@ -33,6 +33,16 @@ export class AnnotationdataService {
     return this.http.get(this.baseurl + '/get-prev-image', {headers});
   }
 
+  deleteImage(imgName: string) {
+
+    const headers = new HttpHeaders()
+      .append('username', this.config.getConfig('username'))
+      .append('password', this.config.getConfig('password'))
+      .append('imgname', imgName);
+
+    return this.http.get(this.baseurl + '/delete-image', {headers});
+  }
+
   deleteCurrImage() {
 
     const headers = new HttpHeaders()

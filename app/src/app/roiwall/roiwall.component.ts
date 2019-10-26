@@ -2,6 +2,9 @@ import { Component, OnInit } from '@angular/core';
 import { Title } from '@angular/platform-browser';
 import { AnnotationdataService } from '../providers/annotationdata.service';
 import {PageEvent} from '@angular/material/paginator';
+import {NotificationsService} from '../providers/notifications.service';
+import { ConfirmDialogModel, ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
+import { MatDialog } from '@angular/material';
 
 @Component({
   selector: 'app-roiwall',
@@ -10,7 +13,13 @@ import {PageEvent} from '@angular/material/paginator';
 })
 export class RoiwallComponent implements OnInit {
 
-  constructor(private adata: AnnotationdataService, private titleService: Title) { }
+  constructor(
+    private adata: AnnotationdataService,
+    private titleService: Title,
+    private notifications: NotificationsService,
+    public dialog: MatDialog
+
+  ) { }
 
   length = 100;
   pageSize = 10;
@@ -47,6 +56,27 @@ export class RoiwallComponent implements OnInit {
         console.log(error);
       }
     );
+  }
+
+  onDeleteSelected(){
+
+    const message = 'Are you sure you want to delete the selected images?';
+
+    const dialogData = new ConfirmDialogModel("Confirm Delete", message);
+
+    const dialogRef = this.dialog.open(ConfirmDialogComponent, {
+      maxWidth: "400px",
+      data: dialogData
+    });
+
+    var self = this;
+    dialogRef.afterClosed().subscribe(dialogResult => {
+
+      if (dialogResult === true){
+        this.notifications.raiseNotifyRoiDeleteSelected();
+      }
+    });
+
   }
 
 

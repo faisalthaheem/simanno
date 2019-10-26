@@ -350,7 +350,51 @@ def getRoiWallData():
 
     return jsonify(response)
 
+@app.route('/delete-image')
+def deleteImage():
+    response = {
+        'response': 'unauthorized'
+    }
+    global refFiles
 
+    try:
+        if authenticateFromHeaders():
+            fileToDelete = request.headers.get("imgname")
+            logger.info("Deleting image by name: " + fileToDelete)
+
+            fileIndex = refFiles.index(fileToDelete)
+            print("file index is: ", fileIndex)
+            pprint(refFiles)
+                        
+            for db in sqlitedbs:
+                try:
+                    cursor = dbcursors[db]
+                    if cursor is not None:
+                        query = "UPDATE annotations set isdeleted = 1 WHERE filename = '{}'".format(fileToDelete)
+                        
+                        lock.acquire()
+                        cursor.execute(query)
+                        dbconns[db].commit()
+
+                        #delete from disk
+                        os.remove(os.path.join(config["anno"]["refimgs"], refFiles[fileIndex]))
+                        del refFiles[fileIndex]
+
+                        response = {
+                            "status": "ok"
+                        }
+                except:
+                    logger.error(traceback.format_exc())
+                finally:
+                    lock.release()
+
+    except:
+        logger.error(traceback.format_exc())
+    pprint(refFiles)
+
+    return jsonify(response)
+
+    
 @app.route('/delete-current-image')
 def deleteCurrentImage():
     response = {
