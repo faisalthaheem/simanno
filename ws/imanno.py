@@ -230,15 +230,18 @@ def updateAnnotation():
     return jsonify(response)
 
 def getCroppedImage(fyl, y, x, h, w):
-        
-    filename = os.path.join(config['anno']['rawimgs'], fyl)
-    logger.info(filename)
-    im = Image.open(filename, mode='r')
-    im = im.crop((x,y,x+w,y+h))
 
-    bdata = io.BytesIO()
-    im.save(bdata, 'JPEG')
-    bdata.seek(0)
+    try:    
+        filename = os.path.join(config['anno']['rawimgs'], fyl)
+        logger.info(filename)
+        im = Image.open(filename, mode='r')
+        im = im.crop(x,y,x+w,y+h)
+
+        bdata = io.BytesIO()
+        im.save(bdata, 'JPEG')
+        bdata.seek(0)
+    except:
+        logger.error(traceback.format_exc())
 
     return bdata
         
@@ -279,10 +282,10 @@ def getRoiForWall():
     # https://gist.github.com/sergeyk/4536515
     try:
         fyl = request.args.get('filename')
-        y = int(request.args.get('y'))
-        x = int(request.args.get('x'))
-        h = int(request.args.get('h'))
-        w = int(request.args.get('w'))
+        y = int(float(request.args.get('y')))
+        x = int(float(request.args.get('x')))
+        h = int(float(request.args.get('h')))
+        w = int(float(request.args.get('w')))
 
         strIO = getCroppedImage(fyl, y, x, h, w)
 
