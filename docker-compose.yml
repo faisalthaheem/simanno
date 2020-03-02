@@ -13,4 +13,4 @@ services:
   web:
     image: faisalthaheem/simanno:web-2.0
     ports:
-      - "8181:4200"
+      - "8181:80"

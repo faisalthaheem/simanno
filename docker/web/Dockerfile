@@ -4,6 +4,7 @@ ADD app/ /opt/ft/web
 WORKDIR /opt/ft/web
 RUN npm install && npm install -g @angular/cli && ng build
 
-EXPOSE 4200
+EXPOSE 80
 
-CMD ng serve --host 0.0.0.0
+FROM nginx:1.16.1-alpine
+COPY --from=0 /opt/ft/web/dist /usr/share/nginx/html
