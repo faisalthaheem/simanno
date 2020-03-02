@@ -2,7 +2,7 @@ version: "3"
 
 services:
   ws:
-    image: simanno/ws:2.0
+    image: faisalthaheem/simanno:ws-2.0
     volumes:
      - $PWD/conf/ws:/opt/ft/ws/conf
      - $PWD/data/images:/data/images
@@ -11,6 +11,6 @@ services:
       - "5000:5000"
 
   web:
-    image: simanno/web:2.0
+    image: faisalthaheem/simanno:web-2.0
     ports:
       - "8181:4200"
