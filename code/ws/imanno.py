@@ -61,7 +61,7 @@ lock = threading.Lock()
 #convenient for the possibly following images to have the same annotated area in lookupimage
 lastAnnotationCoords = None
 
-def loadConfig(configfilename='./imanno.yaml'):
+def loadConfig(configfilename='conf/imanno.yaml'):
 
     global config
     global labelslist

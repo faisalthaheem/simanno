@@ -1,0 +1,12 @@
+auth:
+  path: ./default.creds
+  key: IVV7RrKK7fNi1vMHTuJ8aBDFRa2WrqlOqZzvX5w4Nso=
+labels:
+  list:
+    1: plate
+  default: 1
+anno:
+  dbs: /data/db/imanno.db
+  rawimgs: /data/images
+  refimgs: /data/images
+  createIfAbsent: True

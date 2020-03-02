@@ -1,0 +1,10 @@
+pillow
+scikit-image
+cryptography
+flask
+flask-compress
+flask-cors
+psutil
+paho-mqtt
+pyyaml
+netifaces

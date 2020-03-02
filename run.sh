@@ -1,0 +1,1 @@
+docker run --rm -v $PWD/conf/ws:/opt/ft/ws/conf -v $PWD/data/images:/data/images -v$PWD/data/db:/data/db -p 5000:5000 simanno/ws:2.0
