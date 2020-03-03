@@ -235,7 +235,7 @@ def getCroppedImage(fyl, y, x, h, w):
         filename = os.path.join(config['anno']['rawimgs'], fyl)
         logger.info(filename)
         im = Image.open(filename, mode='r')
-        im = im.crop(x,y,x+w,y+h)
+        im = im.crop((x,y,x+w,y+h))
 
         bdata = io.BytesIO()
         im.save(bdata, 'JPEG')
