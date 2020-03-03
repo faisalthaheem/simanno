@@ -7,7 +7,9 @@ At the heart of the project is the great [jquery plugin](https://github.com/360L
 
 The web app is written on Angular 8 and is supported by a Flask based python 3 web service.
 
-Refer to  [Setup Guide](https://github.com/faisalthaheem/simanno/wiki/Setup-Guide) to get started.
+The easiest and straightforward way is to use Docker to run the services, see [Running with Docker](https://github.com/faisalthaheem/simanno/wiki/Running-with-Docker) for more information. 
+
+If you would like to run outside of Docker, you will need to install dependencies, please refer to  [Setup Guide](https://github.com/faisalthaheem/simanno/wiki/Setup-Guide) to get started.
 
 # Demo
 
