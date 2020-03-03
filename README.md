@@ -1,4 +1,7 @@
 # simanno
+
+![AutomatedBuildBadge](https://img.shields.io/docker/cloud/automated/faisalthaheem/simanno) ![DockerCloudBuildStatus](https://img.shields.io/docker/cloud/build/faisalthaheem/simanno) ![DockerPulls](https://img.shields.io/docker/pulls/faisalthaheem/simanno) ![GithubLastCommit](https://img.shields.io/github/last-commit/faisalthaheem/simanno)
+
 Simple Image Annotation (SimAnno) Tool for Deep Learning Learning Projects.
 
 SimAnno is a web based image annotation tool that uses sqlite database(s) to maintain the annotations for images.
