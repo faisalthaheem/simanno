@@ -11,7 +11,7 @@ Refer to  [Setup Guide](https://github.com/faisalthaheem/simanno/wiki/Setup-Guid
 
 # Demo
 
-![Demo](https://rawcdn.githack.com/faisalthaheem/simanno/bee9168517609401d30d24aba349df35b0c097a1/screenshots/demo.gif)
+![Demo](https://rawcdn.githack.com/faisalthaheem/simanno/f30c565754724ac7c5077f55311baf7ef85243a6/screenshots/demo.gif)
 
 # Annotation Screen
 Following screen a sample image with different areas marked with appropriate labels
