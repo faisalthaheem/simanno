@@ -3,6 +3,7 @@
  * @author 360Learning
  * @author Catalin Dogaru (https://github.com/cdog - http://code.tutsplus.com/tutorials/how-to-create-a-jquery-image-cropping-plugin-from-scratch-part-i--net-20994)
  * @author Adrien David-Sivelle (https://github.com/AdrienDS - Refactoring, Multiselections & Mobile compatibility)
+ * @author Muhammad Faisal (https://github.com/faisalthaheem - Label enhancements)
  */
 (function($) {
     $.imageArea = function(parent, id) {
@@ -164,8 +165,8 @@
 
                 $lblinfo.css({
                       display: visible ? "block" : "none",
-                      left: area.x + 1,
-                      top: (area.y + 1),
+                      left: area.x,
+                      top: area.y + (area.height + 5),
                       "z-index": area.z + 200,
                       "font-size": "0.8em"
                   });
@@ -194,7 +195,7 @@
 
                   });
                   $lblinfo.append($("<br/>"));
-                  var infoText = $("<span>").text("y,x " + area.y + "," + area.x + ":" + area.height + "," + area.width);
+                  var infoText = $("<span>").text("y,x " + Math.round(area.y) + "," + Math.round(area.x) + ":" + Math.round(area.height) + "," + Math.round(area.width));
                   $lblinfo.append(infoText);
 
 
