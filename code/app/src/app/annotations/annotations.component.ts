@@ -5,6 +5,7 @@ import { HostListener } from '@angular/core';
 import { ConfirmDialogModel, ConfirmDialogComponent } from '../confirm-dialog/confirm-dialog.component';
 import { MatDialog } from '@angular/material';
 import { AlertService } from 'ngx-alerts';
+import { ActivatedRoute } from '@angular/router';
 import 'jquery';
 
 // https://medium.com/all-is-web/angular-5-using-jquery-plugins-5edf4e642969
@@ -25,15 +26,22 @@ export class AnnotationsComponent implements OnInit {
   availableLabels: {};
   defaultLabel: {};
   currentLabel:  Map<string,any>;
+  queryParameters: {};
 
   constructor(private adata: AnnotationdataService,
     private titleService: Title,
     private alerts: AlertService,
-    public dialog: MatDialog
+    public dialog: MatDialog,
+    private router: ActivatedRoute
     ) {
       this.currentLabel = new Map<string,any>();
       this.currentLabel.set('id',0);
       this.currentLabel.set('lbl','unkn');
+
+      this.router.queryParams.subscribe(params => {
+        this.queryParameters = params;
+      });
+
     }
 
 
@@ -48,7 +56,12 @@ export class AnnotationsComponent implements OnInit {
       this.currentLabel['id'] = Object.keys(this.defaultLabel)[0];
       this.currentLabel['lbl']= this.defaultLabel[this.currentLabel['id']];
 
-
+      //seek to the requested image if applicable
+      if("seektoimg" in this.queryParameters)
+      {
+        console.debug("Seeking to requested image: " + this.queryParameters["seektoimg"]);
+        this.loadNextImage(false,'name',this.queryParameters["seektoimg"]);
+      }
     });
   }
 

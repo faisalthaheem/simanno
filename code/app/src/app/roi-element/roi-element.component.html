@@ -1,7 +1,13 @@
 <mat-card class="roi-tile">
   <mat-card-header>
-    <mat-card-title>{{imgname}}</mat-card-title>
-    <mat-card-subtitle *ngIf="!isDeleted">[{{roidata.id}}] [y,x,h,w] [{{roidata.y}},{{roidata.x}},{{roidata.height}},{{roidata.width}}] {{roidata.lblid}} {{roidata.lbltxt}}</mat-card-subtitle>
+    <mat-card-title>
+      <a target="_blank"
+      href="/annotations?seektoimg={{imgname}}"
+      >
+      {{imgname}}
+      </a>
+    </mat-card-title>
+    <mat-card-subtitle *ngIf="!isDeleted">[{{roidata.id}}] [y,x,h,w] [{{roidata.y | number:'1.0-0'}},{{roidata.x | number:'1.0-0'}},{{roidata.height | number:'1.0-0'}},{{roidata.width | number:'1.0-0'}}] {{roidata.lblid}} {{roidata.lbltxt}}</mat-card-subtitle>
     <mat-card-subtitle *ngIf="isDeleted">Deleted</mat-card-subtitle>
   </mat-card-header>
   <img class="tile-image" src="{{baseurl}}/get-roi-for-wall?filename={{imgname}}&y={{roidata.y}}&x={{roidata.x}}&h={{roidata.height}}&w={{roidata.width}}" alt="Photo of a Shiba Inu">
