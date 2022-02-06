@@ -28,3 +28,33 @@ Following image shows the regions of interest extracted from the available data 
 
 # Issues and Feedback
 Please use the issues link on the top to report any issues/feedback/suggestions.
+
+# Scripts
+
+There are few useful scripts that faciliate data import and export to/from simanno. The following section describes these briefly.
+
+## app/scripts/import-cat-from-coco.py
+Using this script you can extract a category of images from the COCO dataset. For instance, the following command extracts all images belonging to the "cars" category and moves them to a destination folder while also creating a stand alone sqlite db that works with simanno.
+```bash
+python3 import-cat-from-coco.py \
+-t val -c car -li 1 \
+-af $COCO_PATH/annotations/instances_val2017.json 
+-dp $CARS_FROM_COCO_PATH 
+-sp $COCO_PATH/val2017/
+```
+
+Where, the parameters are
+|Parameter|Valid values|Description|
+|---|---|---|
+|-t |val or train| Type of dataset that is being created for simanno. Influences the names of db file and destination folder.|
+|-c |string| Name of category that should exist in coco dataset.|
+|-li|integer| The label index to be assigned when records are added to db. Label text is taken from the -c parameter.|
+|-af|path| Path to the coco annotations file.|
+|-dp|path| Path to the destination folder which will contain a database file and a folder containing images copied from the coco dataset.|
+|-sp|path| Path to the source folder containing coco images to be copied from into the destination folder.|
+
+
+Alternatively you can use the docker-container version to run this script with the following command
+```bash
+Todo
+```
