@@ -7,7 +7,8 @@ import json
 import shutil
 
 # Sample invocation
-# python3 import-cat-from-coco.py -t val -c car -li 1 -af $COCO_PATH/annotations/instances_val2017.json -dp $CARS_FROM_COCO_PATH -sp $COCO_PATH/val2017/
+# python3 import-cat-from-coco.py -t val -c car -li 1 -af $CARS_FROM_COCO_PATH/annotations/instances_val2017.json -dp $CARS_FROM_COCO_PATH -sp $COCO_PATH/val2017/
+# python3 import-cat-from-coco.py -t train -c car -li 1 -af $COCO_PATH/annotations/instances_train2017.json -dp $CARS_FROM_COCO_PATH -sp $COCO_PATH/train2017/
 
 ap = argparse.ArgumentParser()
 
