@@ -34,7 +34,30 @@ Please use the issues link on the top to report any issues/feedback/suggestions.
 There are few useful scripts that faciliate data import and export to/from simanno. The following section describes these briefly.
 
 ## app/scripts/import-cat-from-coco.py
-Using this script you can extract a category of images from the COCO dataset. For instance, the following command extracts all images belonging to the "cars" category and moves them to a destination folder while also creating a stand alone sqlite db that works with simanno.
+
+> Using this script you can extract a category of images from the COCO dataset.
+
+The scripts expects the following arguments
+The comand expects the following arguments
+```bash
+usage: import-cat-from-coco.py [-h] -c CATEGORY -t TYPE -li LBLID -af ANNOTATIONFILE -sp SRCPATH -dp DESTPATH
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CATEGORY, --category CATEGORY
+                        The category to extract.
+  -t TYPE, --type TYPE  Type to assign to images, accepted values are train or val, default is train.
+  -li LBLID, --lblid LBLID
+                        The label id to be used for this category.
+  -af ANNOTATIONFILE, --annotationfile ANNOTATIONFILE
+                        Path to annotation file.
+  -sp SRCPATH, --srcpath SRCPATH
+                        Path of source containing images.
+  -dp DESTPATH, --destpath DESTPATH
+                        Path to destination to create the db and save images to.
+```
+
+For instance, the following command extracts all images belonging to the "cars" category and moves them to a destination folder while also creating a stand alone sqlite db that works with simanno.
 ```bash
 python3 import-cat-from-coco.py \
 -t val -c car -li 1 \
@@ -55,6 +78,41 @@ Where, the parameters are
 
 
 Alternatively you can use the docker-container version to run this script with the following command
+```bash
+Todo
+```
+
+## app/scripts/mergedbs.py
+> For merging multiple simanno datasets into a single set for training and validation.
+
+This script uses a yaml configuration file as input and provides remapping of the source labels in addition to merging annotations db table and files. 
+
+As output train and val folders containing images and train and val dbs are produced. 
+
+If the destination dbs exist then they are deleted before re-generation, files are only copied again if missing in destination.
+
+
+For an example of a sample merge config file please take a look at
+```bash
+conf/scripts/mergedbs.sample.yaml
+```
+
+The comand expects the following arguments
+```bash
+usage: mergedbs.py [-h] -c CONFIGFILE
+
+optional arguments:
+  -h, --help            show this help message and exit
+  -c CONFIGFILE, --configfile CONFIGFILE
+                        Path to the merge config file.
+```
+
+To execute, use the following command
+```bash
+python3 mergedbs.py -c mergedbs.yaml
+```
+
+Or, use the docker variant as given below
 ```bash
 Todo
 ```
