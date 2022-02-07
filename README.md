@@ -1,6 +1,11 @@
-# simanno
+|Repository|Last commit|Docker CI Health|Docker pulls|
+|---|---|---|---|
+|Scripts|![GithubLastCommit](https://img.shields.io/github/last-commit/faisalthaheem/simanno-scripts)|[![Docker Image CI](https://github.com/faisalthaheem/simanno-scripts/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/faisalthaheem/simanno-scripts/actions/workflows/docker-image.yml)|![DockerPulls](https://img.shields.io/docker/pulls/faisalthaheem/simanno-scripts)|
+|Backend|![GithubLastCommit](https://img.shields.io/github/last-commit/faisalthaheem/simanno-be)|[![Docker Image CI](https://github.com/faisalthaheem/simanno-be/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/faisalthaheem/simanno-be/actions/workflows/docker-image.yml)|![DockerPulls](https://img.shields.io/docker/pulls/faisalthaheem/simanno-be)|
+|Frontend|![GithubLastCommit](https://img.shields.io/github/last-commit/faisalthaheem/simanno-fe)|[![Docker Image CI](https://github.com/faisalthaheem/simanno-fe/actions/workflows/docker-image.yml/badge.svg?branch=main)](https://github.com/faisalthaheem/simanno-fe/actions/workflows/docker-image.yml)|![DockerPulls](https://img.shields.io/docker/pulls/faisalthaheem/simanno-fe)|
 
-![AutomatedBuildBadge](https://img.shields.io/docker/cloud/automated/faisalthaheem/simanno) ![DockerCloudBuildStatus](https://img.shields.io/docker/cloud/build/faisalthaheem/simanno) ![DockerPulls](https://img.shields.io/docker/pulls/faisalthaheem/simanno) ![GithubLastCommit](https://img.shields.io/github/last-commit/faisalthaheem/simanno)
+
+# simanno
 
 Simple Image Annotation (SimAnno) Tool for Deep Learning Projects.
 
