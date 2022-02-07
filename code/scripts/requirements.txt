@@ -1,3 +1,0 @@
-pycocotools
-pyyaml
-pysqlite3
