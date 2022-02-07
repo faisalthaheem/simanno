@@ -60,7 +60,7 @@ Please use the issues link on the top to report any issues/feedback/suggestions.
 
 There are few useful scripts that faciliate data import and export to/from simanno. The following section describes these briefly.
 
-## app/scripts/import-cat-from-coco.py
+## code/import-cat-from-coco.py
 
 > Using this script you can extract a category of images from the COCO dataset.
 
@@ -115,7 +115,7 @@ docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno-scripts:main
 
 > Notice "/usr/local/bin/python3.8" which is important in the image
 
-## app/scripts/mergedbs.py
+## code/mergedbs.py
 > For merging multiple simanno datasets into a single set for training and validation.
 
 This script uses a yaml configuration file as input and provides remapping of the source labels in addition to merging annotations db table and files. 
@@ -148,4 +148,30 @@ python3 mergedbs.py -c mergedbs.yaml
 Or, use the docker variant as given below, assuming you're in the folder containing all your datasets
 ```bash
 docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno-scripts:main "/usr/local/bin/python3.8 /simanno/scripts/mergedbs.py -c /datasets/mergedbs.yaml"
+```
+
+## code/splitdb.py
+> For splitting a common db into two given input a folder containing images.
+
+Given there is a simanno database that contains annotation of images contained in several folders, this script allows to split this database into several independent files thus allowing for better management of the training data.
+
+To execute the script directly, a command similar to following can be used
+```bash
+python3 splitdb.py -r $PLATE_DETECTION_PATH/train -o $PLATE_DETECTION_PATH/train.db -i $PLATE_DETECTION_PATH/train_and_val.d
+```
+
+Or, if using the docker image, then following command accomplishes the same result
+```bash
+docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno-scripts:main "/usr/local/bin/python3.8 /simanno/scripts/splitdb.py -r /datasets/plate_detection/train -o /datasets/plate_detection/train.db -i /datasets/plate_detection/train_and_val.db"
+```
+
+The comand expects the following arguments
+```bash
+usage: splitdb.py [-h] -r REF -o OUT -i IN
+
+optional arguments:
+  -h, --help         show this help message and exit
+  -r REF, --ref REF  Path to the folder containing ref images.
+  -o OUT, --out OUT  Path to the destination db which will be created bearing contents related to ref folder images.
+  -i IN, --in IN     Path to the source db containing information on ref images.
 ```
