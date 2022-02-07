@@ -11,6 +11,6 @@ services:
       - "5000:5000"
 
   web:
-    image: faisalthaheem/simanno-web:dev
+    image: faisalthaheem/simanno-fe:dev
     ports:
       - "8181:80"

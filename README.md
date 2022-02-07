@@ -37,14 +37,15 @@ Following image shows the regions of interest extracted from the available data 
 ![ROI Wall](https://raw.githack.com/faisalthaheem/simanno/master/screenshots/wall-v2.png)
 
 ## Running the demo locally
+
+To launch the stack using the latest containers from main branch, use the following command
+```bash
+docker-compose -f docker-compose.yml up -d
+```
+
 If you have cloned the repositories and are developing, you can use the following command to launch the stack in development mode
 ```bash
 docker-compose -f docker-compose.dev.yml up -d
-```
-
-And to launch the stack without using the development containers, use the following command
-```bash
-docker-compose -f docker-compose.yml up -d
 ```
 
 # Issues and Feedback
@@ -100,11 +101,11 @@ Where, the parameters are
 
 Alternatively you can use the docker-container version to run this script with the following command
 ```bash
-docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno:scripts-2.0 "/usr/local/bin/python3.8 import-cat-from-coco.py -t val -c car -li 1 -af /datasets/coco/annotations/instances_val2017.json -dp /datasets/cars_from_coco -sp /datasets/coco/val2017/"
+docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno-scripts:main "/usr/local/bin/python3.8 import-cat-from-coco.py -t val -c car -li 1 -af /datasets/coco/annotations/instances_val2017.json -dp /datasets/cars_from_coco -sp /datasets/coco/val2017/"
 ```
 
 ```bash
-docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno:scripts-2.0 "/usr/local/bin/python3.8 import-cat-from-coco.py -t train -c car -li 1 -af /datasets/coco/annotations/instances_train2017.json -dp /datasets/cars_from_coco -sp /datasets/coco/train2017/"
+docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno-scripts:main "/usr/local/bin/python3.8 import-cat-from-coco.py -t train -c car -li 1 -af /datasets/coco/annotations/instances_train2017.json -dp /datasets/cars_from_coco -sp /datasets/coco/train2017/"
 ```
 
 > Notice "/usr/local/bin/python3.8" which is important in the image
@@ -141,5 +142,5 @@ python3 mergedbs.py -c mergedbs.yaml
 
 Or, use the docker variant as given below, assuming you're in the folder containing all your datasets
 ```bash
-docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno:scripts-2.0 "/usr/local/bin/python3.8 /simanno/scripts/mergedbs.py -c /datasets/mergedbs.yaml"
+docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno-scripts:main "/usr/local/bin/python3.8 /simanno/scripts/mergedbs.py -c /datasets/mergedbs.yaml"
 ```
