@@ -79,8 +79,14 @@ Where, the parameters are
 
 Alternatively you can use the docker-container version to run this script with the following command
 ```bash
-Todo
+docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno:scripts-2.0 "/usr/local/bin/python3.8 import-cat-from-coco.py -t val -c car -li 1 -af /datasets/coco/annotations/instances_val2017.json -dp /datasets/cars_from_coco -sp /datasets/coco/val2017/"
 ```
+
+```bash
+docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno:scripts-2.0 "/usr/local/bin/python3.8 import-cat-from-coco.py -t train -c car -li 1 -af /datasets/coco/annotations/instances_train2017.json -dp /datasets/cars_from_coco -sp /datasets/coco/train2017/"
+```
+
+> Notice "/usr/local/bin/python3.8" which is important in the image
 
 ## app/scripts/mergedbs.py
 > For merging multiple simanno datasets into a single set for training and validation.
@@ -112,7 +118,7 @@ To execute, use the following command
 python3 mergedbs.py -c mergedbs.yaml
 ```
 
-Or, use the docker variant as given below
+Or, use the docker variant as given below, assuming you're in the folder containing all your datasets
 ```bash
-Todo
+docker run --rm -it -u $UID -v $PWD:/datasets faisalthaheem/simanno:scripts-2.0 "/usr/local/bin/python3.8 /simanno/scripts/mergedbs.py -c /datasets/mergedbs.yaml"
 ```

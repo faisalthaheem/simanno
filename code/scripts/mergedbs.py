@@ -9,6 +9,7 @@ import yaml
 import json
 import shutil
 
+
 ap = argparse.ArgumentParser()
 ap.add_argument("-c", "--configfile", required=True,
     help="Path to the merge config file.")
@@ -42,7 +43,6 @@ with open(args['configfile'],"r") as f:
     config = yaml.safe_load(f)
 
 dest_label_map = config['dest']['label_mapping']
-print(dest_label_map)
 
 def initDb(conn):
     init_script = ""
