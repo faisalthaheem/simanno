@@ -4,8 +4,3 @@ db
 sample-images
 screenshots
 venv
-code/app/node_modules
-
-#scripts related
-/code/scripts/mergedbs.yaml
-/code/scripts/set-env-vars.sh
