@@ -108,3 +108,7 @@ venv.bak/
 #other files
 mongoose-free-*
 reffiles.txt
+
+#scripts related
+/code/scripts/mergedbs.yaml
+/code/scripts/set-env-vars.sh
