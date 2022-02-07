@@ -28,13 +28,24 @@ If you would like to run outside of Docker, you will need to install dependencie
 
 ![Demo](https://rawcdn.githack.com/faisalthaheem/simanno/f30c565754724ac7c5077f55311baf7ef85243a6/screenshots/demo.gif)
 
-# Annotation Screen
+## Annotation Screen
 Following screen a sample image with different areas marked with appropriate labels
 ![Annotation Screen](https://rawcdn.githack.com/faisalthaheem/simanno/daec6b7be6a4dcfbd2f332199bcc97bc5b130e1c/screenshots/annotating-v2.png)
 
-# ROI (Regions Of Interest) Wall
+## ROI (Regions Of Interest) Wall
 Following image shows the regions of interest extracted from the available data for a quick review
 ![ROI Wall](https://raw.githack.com/faisalthaheem/simanno/master/screenshots/wall-v2.png)
+
+## Running the demo locally
+If you have cloned the repositories and are developing, you can use the following command to launch the stack in development mode
+```bash
+docker-compose -f docker-compose.dev.yml up -d
+```
+
+And to launch the stack without using the development containers, use the following command
+```bash
+docker-compose -f docker-compose.yml up -d
+```
 
 # Issues and Feedback
 Please use the issues link on the top to report any issues/feedback/suggestions.

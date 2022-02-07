@@ -2,7 +2,7 @@ version: "3"
 
 services:
   ws:
-    image: faisalthaheem/simanno-be:main
+    image: faisalthaheem/simanno-be:dev
     volumes:
      - $PWD/sample-conf/be:/simanno/be/conf
      - $PWD/sample-images:/images
@@ -11,6 +11,6 @@ services:
       - "5000:5000"
 
   web:
-    image: faisalthaheem/simanno-web:main
+    image: faisalthaheem/simanno-web:dev
     ports:
       - "8181:80"
