@@ -1,0 +1,33 @@
+<mat-toolbar>
+  <mat-toolbar-row>
+    <button mat-raised-button color="accent" mat-button (click)="onDeleteSelected()">Delete Selected</button>
+    <span class="example-spacer"></span>
+    <mat-paginator [length]="length" [pageSize]="pageSize" [pageSizeOptions]="pageSizeOptions"
+      (page)="onPageChange($event)">
+    </mat-paginator>
+  </mat-toolbar-row>
+</mat-toolbar>
+
+<br />
+
+<div class="roi-grid">
+  <div *ngIf="!gridData || gridData.length === 0" class="no-data">
+    <p>No ROIs found.</p>
+  </div>
+  
+  <div *ngFor="let roi of gridData; let i = index" class="roi-item">
+    <div class="roi-header">{{ roi.filename }}</div>
+    <div class="roi-image-container">
+      <img 
+        src="{{ baseurl }}/get-roi-for-wall?filename={{ roi.filename }}&y={{ roi.y }}&x={{ roi.x }}&h={{ roi.height }}&w={{ roi.width }}" 
+        [alt]="'ROI ' + roi.roi_id + ' of ' + roi.filename" 
+        (error)="handleImageError($event, roi.filename)" 
+        (load)="onImageLoad($event, roi.filename)"
+        class="roi-image">
+    </div>
+    <div class="roi-footer">
+      <a [href]="'/annotations?seektoimg=' + roi.filename" target="_blank" class="view-details-link">View Details</a>
+    </div>
+  </div>
+</div>
+

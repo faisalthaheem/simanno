@@ -1,0 +1,10 @@
+labels:
+  list:
+    1: plate
+    2: signal
+  default: 1
+anno:
+  dbs: ./db/sample.db
+  rawimgs: ./sample-images
+  refimgs: ./sample-images
+  createIfAbsent: True

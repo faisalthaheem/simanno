@@ -1,0 +1,7 @@
+fastapi
+pillow
+pyyaml
+uvicorn
+sqlalchemy
+pytest
+pytest-asyncio

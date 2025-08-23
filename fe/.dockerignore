@@ -1,0 +1,28 @@
+# Dependencies
+node_modules
+
+# IDE files
+.vscode
+.idea
+
+# Git files
+.git
+.gitignore
+
+# Log files
+*.log
+
+# Environment files
+.env*
+
+# Docker files
+Dockerfile*
+.dockerignore
+
+# Build artifacts
+app/dist/
+app/.angular/
+
+# OS generated files
+.DS_Store
+Thumbs.db

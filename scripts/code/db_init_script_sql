@@ -1,0 +1,34 @@
+BEGIN TRANSACTION;
+CREATE TABLE IF NOT EXISTS "annotations" (
+	"filename"	TEXT,
+	"imheight"	INTEGER,
+	"imwidth"	INTEGER,
+	"isreviewed"	INTEGER DEFAULT false,
+	"lastreviewedat"	INTEGER DEFAULT null,
+	"isdeleted"	INTEGER DEFAULT 0,
+	"needscropping"	INTEGER DEFAULT 0,
+	"isbackground"	INTEGER DEFAULT 0,
+	"imgareas"	TEXT
+);
+CREATE INDEX IF NOT EXISTS "idx_filename" ON "annotations" (
+	"filename"
+);
+CREATE INDEX IF NOT EXISTS "idx_filename_isreviewed" ON "annotations" (
+	"filename",
+	"isreviewed"
+);
+CREATE INDEX IF NOT EXISTS "idx_plates_fn_rev_del" ON "annotations" (
+	"filename",
+	"isreviewed",
+	"isdeleted"
+);
+CREATE INDEX IF NOT EXISTS "idx_plates_lastreviewed" ON "annotations" (
+	"lastreviewedat"
+);
+CREATE INDEX IF NOT EXISTS "idx_plates_reviewed" ON "annotations" (
+	"isreviewed"
+);
+CREATE UNIQUE INDEX IF NOT EXISTS "idx_unq_filename" ON "annotations" (
+	"filename"
+);
+COMMIT;

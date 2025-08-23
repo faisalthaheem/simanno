@@ -1,0 +1,11 @@
+@import "~bootstrap/dist/css/bootstrap.min.css";
+@import "~font-awesome/css/font-awesome.min.css";
+@import "~open-iconic/font/css/open-iconic-bootstrap.min.css";
+@import "~assets/css/jquery.selectareas.css";
+/* You can add global styles to this file, and also import other style files */
+body {
+  background-color: black;
+}
+
+html, body { height: 100%; }
+body { margin: 0; font-family: Roboto, "Helvetica Neue", sans-serif; }
