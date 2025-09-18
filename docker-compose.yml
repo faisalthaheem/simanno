@@ -2,15 +2,18 @@ version: "3"
 
 services:
   ws:
-    image: faisalthaheem/simanno-be:main
+    image: faisalthaheem/simanno-be:latest
     volumes:
-     - $PWD/sample-conf/be:/simanno/be/conf
-     - $PWD/sample-images:/images
-     - $PWD/sample-db:/dbs
+    #The CMD in docker file expects this file at this location
+     - $PWD/be/imanno.yaml:/app/imanno.yaml
+    #The default imanno.yaml file expects this directory to be mounted at /app/images.
+     - $PWD/be/sample-images:/app/sample-images
+    #The default imanno.yaml file expects the database at this location.
+     - $PWD/be/db/sample.db:/app/db/sample.db
     ports:
-      - "5000:5000"
+      - "8000:8000"
 
   web:
-    image: faisalthaheem/simanno-fe:main
+    image: faisalthaheem/simanno-fe:latest
     ports:
       - "8181:80"
