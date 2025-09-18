@@ -15,6 +15,6 @@ export class NotificationsService {
   constructor(){}
 
   public raiseNotifyRoiDeleteSelected() {
-    this.notifyRoiDeleteSelected.next();
+    this.notifyRoiDeleteSelected.next(null);
   }
 }

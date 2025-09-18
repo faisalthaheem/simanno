@@ -133,7 +133,6 @@
       }
     }
   },
-  "defaultProject": "img-anno",
   "schematics": {
     "@schematics/angular:component": {
       "prefix": "app",
